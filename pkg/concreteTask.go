@@ -40,6 +40,6 @@ func (ct ConcreteTask) FinishDate() time.Time {
 
 func (ct ConcreteTask) latestFinishDateOfSubtasks() time.Time {
 	finishDates := internal.Map(ct.dependents, func(aTask Task) time.Time { return aTask.FinishDate() })
-	latestFinishDate := internal.MaxElement(finishDates, time.Time.After)
+	latestFinishDate := internal.MaxDateInArray(finishDates)
 	return latestFinishDate
 }

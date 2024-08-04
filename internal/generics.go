@@ -8,7 +8,7 @@ func Map[T, V any](ts []T, fn func(T) V) []V {
 	return result
 }
 
-func MaxElement[T any](arr []T, compare func(a, b T) bool) T {
+func MaximizeElementByComparer[T any](arr []T, compare func(a, b T) bool) T {
 	if len(arr) == 0 {
 		panic("Array must contain at least one element")
 	}

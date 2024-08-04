@@ -11,3 +11,11 @@ func GreaterDuration(a, b time.Duration) bool {
 func MaxDateBetween(aDate, anotherDate time.Time) time.Time {
 	return Max(aDate, anotherDate, time.Time.After) // Method expression
 }
+
+func MaxDateInArray(array []time.Time) time.Time {
+	return MaximizeElementByComparer(array, time.Time.After)
+}
+
+func MinDateInArray(array []time.Time) time.Time {
+	return MaximizeElementByComparer(array, time.Time.Before)
+}
