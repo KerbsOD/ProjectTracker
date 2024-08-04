@@ -93,21 +93,23 @@ func Test12ProjectFinishDateIsSubtasksLatestFinishDate(t *testing.T) {
 func Test13DeveloperWithoutOverAssignmentsReturnsEmptyCollection(t *testing.T) {
 	taskSSA := NewConcreteTask("SS A", danIngalls, julyFirst, 8, []Task{})
 	project := NewProject("Modelo", []Task{taskSSA})
+	worksheet := project.Worksheet()
 
 	overassignments := make(map[*Developer][]time.Time)
 
-	assert.Equal(t, project.Overassignments(), overassignments)
+	assert.Equal(t, worksheet.Overassignments(), overassignments)
 }
 
 func Test14DeveloperWithOverassignmentsReturnsArrayWithOverassignedDays(t *testing.T) {
 	taskSSA := NewConcreteTask("SS A", danIngalls, julyFirst, 8, []Task{})
 	taskSSB := NewConcreteTask("SS B", parcMobTeam, julyFirst, 16, []Task{})
 	project := NewProject("Modelo", []Task{taskSSA, taskSSB})
+	worksheet := project.Worksheet()
 
 	overassignments := make(map[*Developer][]time.Time)
 	overassignments[danIngalls] = []time.Time{julyFirst}
 
-	assert.Equal(t, project.Overassignments(), overassignments)
+	assert.Equal(t, worksheet.Overassignments(), overassignments)
 }
 
 /*
@@ -116,11 +118,12 @@ func Test15DevelopersWithOverassignmentsReturnsArrayWithOverassignedDaysPerDevel
 	taskSSB := NewConcreteTask("SS B", alanKay, julyFirst, 6, []Task{})
 	taskSSC := NewConcreteTask("SS C", parcMobTeam, julyFirst, 6, []Task{})
 	project := NewProject("Modelo", []Task{taskSSA, taskSSB, taskSSC})
+	worksheet := project.Worksheet()
 
 	overassignments := make(map[*Developer][]time.Time)
 	overassignments[danIngalls] = []time.Time{julyFirst}
 	overassignments[alanKay] = []time.Time{julyFirst}
 
-	assert.Equal(t, project.Overassignments(), overassignments)
+	assert.Equal(t, worksheet.Overassignments(), overassignments)
 }
 */

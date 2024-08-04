@@ -17,19 +17,18 @@ func NewProject(name string, subtasks []Task) *Project {
 	return p
 }
 
-func (p *Project) StartDate() time.Time {
+func (p Project) StartDate() time.Time {
 	earliestStartDate := p.earliestStartDateOfSubtasks()
 	return earliestStartDate
 }
 
-func (p *Project) FinishDate() time.Time {
+func (p Project) FinishDate() time.Time {
 	latestFinishDate := p.latestFinishDateOfSubtasks()
 	return latestFinishDate
 }
 
-func (p *Project) Overassignments() map[*Developer][]time.Time {
-	overassignments := make(map[*Developer][]time.Time)
-	return overassignments
+func (p Project) Worksheet() *WorkSheet {
+	return NewWorkSheet(p)
 }
 
 func (p Project) earliestStartDateOfSubtasks() time.Time {
