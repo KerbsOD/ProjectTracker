@@ -27,14 +27,19 @@ func (p *Project) FinishDate() time.Time {
 	return latestFinishDate
 }
 
+func (p *Project) Overassignments() map[*Developer][]time.Time {
+	overassignments := make(map[*Developer][]time.Time)
+	return overassignments
+}
+
 func (p Project) earliestStartDateOfSubtasks() time.Time {
 	startDates := internal.Map(p.subtasks, func(aTask Task) time.Time { return aTask.StartDate() })
-	earliestFinishDate := internal.MaxElement(startDates, time.Time.Before)
+	earliestFinishDate := internal.MinDateInArray(startDates)
 	return earliestFinishDate
 }
 
 func (p Project) latestFinishDateOfSubtasks() time.Time {
 	finishDates := internal.Map(p.subtasks, func(aTask Task) time.Time { return aTask.FinishDate() })
-	latestFinishDate := internal.MaxElement(finishDates, time.Time.After)
+	latestFinishDate := internal.MaxDateInArray(finishDates)
 	return latestFinishDate
 }
