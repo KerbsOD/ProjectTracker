@@ -19,7 +19,7 @@ func NewTeam(name string, members []Responsible) *Team {
 
 func (t Team) DaysToFinish(effort int) time.Duration {
 	daysToCompleteTaskForEachResponsible := t.daysToCompleteTaskForEachResponsible(effort)
-	maxDaysToCompleteTaskAmongResponsibles := internal.MaxElement(daysToCompleteTaskForEachResponsible, internal.GreaterDuration)
+	maxDaysToCompleteTaskAmongResponsibles := internal.MaximizeElementByComparer(daysToCompleteTaskForEachResponsible, internal.GreaterDuration)
 	return maxDaysToCompleteTaskAmongResponsibles
 }
 
