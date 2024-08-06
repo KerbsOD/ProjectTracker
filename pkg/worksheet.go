@@ -6,22 +6,33 @@ import (
 )
 
 type WorkSheet struct {
-	project Project
+	project                            Project
+	numberOfDailyTasksForEachDeveloper map[*Developer]map[time.Time]int
 }
 
 func NewWorkSheet(aProject Project) *WorkSheet {
 	ws := new(WorkSheet)
 	ws.project = aProject
+	ws.numberOfDailyTasksForEachDeveloper = ws.numberOfTasksPerDateForEachDeveloper()
 	return ws
 }
 
 func (ws WorkSheet) Overassignments() map[*Developer][]time.Time {
 	overassignedDatesForEachDeveloper := make(map[*Developer][]time.Time)
-	for developer, numberOfWorkingDates := range ws.numberOfWorkingDatesByDeveloper() {
-		overassignedDatesForEachDeveloper[developer] = ws.overassignedDates(numberOfWorkingDates)
+	for developer, numberOfTasksForEachDate := range ws.numberOfDailyTasksForEachDeveloper {
+		overassignedDatesForEachDeveloper[developer] = ws.overassignedDates(numberOfTasksForEachDate)
 	}
 
 	return overassignedDatesForEachDeveloper
+}
+
+func (ws WorkSheet) HasOverassignments() bool {
+	for _, overassignedDates := range ws.Overassignments() {
+		if len(overassignedDates) > 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func (ws WorkSheet) overassignedDates(aNumberOfTasksForEachDate map[time.Time]int) []time.Time {
@@ -34,7 +45,7 @@ func (ws WorkSheet) overassignedDates(aNumberOfTasksForEachDate map[time.Time]in
 	return overassignedDates
 }
 
-func (ws WorkSheet) numberOfWorkingDatesByDeveloper() map[*Developer]map[time.Time]int {
+func (ws WorkSheet) numberOfTasksPerDateForEachDeveloper() map[*Developer]map[time.Time]int {
 	numberOfTasksForEachDateByDeveloper := map[*Developer]map[time.Time]int{}
 	for developer, workingDates := range ws.workingDatesByDeveloper() {
 		numberOfTasksForEachDateByDeveloper[developer] = internal.MapWithNumberOfOccurrencesForEachElement(workingDates)

@@ -109,7 +109,7 @@ func Test13DeveloperWithoutOverAssignmentsReturnsEmptyCollection(t *testing.T) {
 func Test14DeveloperWithOverassignmentsReturnsArrayWithOverassignedDays(t *testing.T) {
 	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
 	taskSSB := NewConcreteTask("SS B", parcMobTeam, july1th, 16, []Task{})
-	project := NewProject("Modelo", []Task{taskSSA, taskSSB})
+	project := NewProject("modelo", []Task{taskSSA, taskSSB})
 	worksheet := project.Worksheet()
 
 	overassignments := make(map[*Developer][]time.Time)
@@ -138,4 +138,19 @@ func Test15DevelopersWithOverassignmentsReturnsArrayWithOverassignedDaysPerDevel
 	assert.ElementsMatch(t, worksheet.Overassignments()[danIngalls], overassignments[danIngalls])
 	assert.ElementsMatch(t, worksheet.Overassignments()[alanKay], overassignments[alanKay])
 	assert.ElementsMatch(t, worksheet.Overassignments()[adeleGoldberg], overassignments[adeleGoldberg])
+}
+
+func Test16ProjectDoesNotHaveOverassignmentsIfDevelopersWorkInOneTaskForEachDate(t *testing.T) {
+	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+	project := NewProject("Modelo", []Task{taskSSA})
+	worksheet := project.Worksheet()
+	assert.False(t, worksheet.HasOverassignments())
+}
+
+func Test17ProjectHavesOverassignmentsIfADeveloperWorksInMoreThanOneTaskInADate(t *testing.T) {
+	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+	taskSSB := NewConcreteTask("SS B", parcMobTeam, july1th, 16, []Task{})
+	project := NewProject("modelo", []Task{taskSSA, taskSSB})
+	worksheet := project.Worksheet()
+	assert.True(t, worksheet.HasOverassignments())
 }
