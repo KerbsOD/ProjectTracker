@@ -10,10 +10,10 @@ type Project struct {
 	subtasks []Task
 }
 
-func NewProject(name string, subtasks []Task) *Project {
+func NewProject(aName string, aSliceOfTasks []Task) *Project {
 	p := new(Project)
-	p.name = name
-	p.subtasks = subtasks
+	p.name = aName
+	p.subtasks = aSliceOfTasks
 	return p
 }
 
@@ -31,12 +31,6 @@ func (p Project) Worksheet() *WorkSheet {
 	return NewWorkSheet(p)
 }
 
-func (p Project) AddWorkingDatesByDeveloperTo(aWorkingDatesArrayByDeveloper map[*Developer][]time.Time) {
-	for _, subtask := range p.subtasks {
-		subtask.AddWorkingDatesByDeveloperTo(aWorkingDatesArrayByDeveloper)
-	}
-}
-
 func (p Project) earliestStartDateOfSubtasks() time.Time {
 	startDates := internal.Map(p.subtasks, func(aTask Task) time.Time { return aTask.StartDate() })
 	earliestFinishDate := internal.MinDateInArray(startDates)
@@ -47,4 +41,10 @@ func (p Project) latestFinishDateOfSubtasks() time.Time {
 	finishDates := internal.Map(p.subtasks, func(aTask Task) time.Time { return aTask.FinishDate() })
 	latestFinishDate := internal.MaxDateInArray(finishDates)
 	return latestFinishDate
+}
+
+func (p Project) AddWorkingDatesForEachDeveloper(aWorkingDatesSliceForEachDeveloper map[*Developer][]time.Time) {
+	for _, subtask := range p.subtasks {
+		subtask.AddWorkingDatesForEachDeveloper(aWorkingDatesSliceForEachDeveloper)
+	}
 }
