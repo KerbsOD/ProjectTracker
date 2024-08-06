@@ -24,7 +24,7 @@ func MinDateInArray(array []time.Time) time.Time {
 
 func DatesBetween(startDate, endDate time.Time) []time.Time {
 	dates := []time.Time{}
-	for currentDate := startDate; currentDate.Before(endDate); currentDate.Add(Day) {
+	for currentDate := startDate; currentDate.Before(endDate); currentDate = currentDate.Add(Day) {
 		dates = append(dates, currentDate)
 	}
 
