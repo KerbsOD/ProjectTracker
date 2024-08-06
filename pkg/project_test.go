@@ -96,8 +96,9 @@ func Test13DeveloperWithoutOverAssignmentsReturnsEmptyCollection(t *testing.T) {
 	worksheet := project.Worksheet()
 
 	overassignments := make(map[*Developer][]time.Time)
+	overassignments[danIngalls] = []time.Time{}
 
-	assert.Equal(t, worksheet.Overassignments(), overassignments)
+	assert.Equal(t, overassignments, worksheet.Overassignments())
 }
 
 func Test14DeveloperWithOverassignmentsReturnsArrayWithOverassignedDays(t *testing.T) {
@@ -108,8 +109,9 @@ func Test14DeveloperWithOverassignmentsReturnsArrayWithOverassignedDays(t *testi
 
 	overassignments := make(map[*Developer][]time.Time)
 	overassignments[danIngalls] = []time.Time{julyFirst}
+	overassignments[alanKay] = []time.Time{}
 
-	assert.Equal(t, worksheet.Overassignments(), overassignments)
+	assert.Equal(t, overassignments, worksheet.Overassignments())
 }
 
 /*

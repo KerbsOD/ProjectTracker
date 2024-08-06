@@ -1,6 +1,9 @@
 package pkg
 
-import "time"
+import (
+	"Project/internal"
+	"time"
+)
 
 type WorkSheet struct {
 	project Project
@@ -13,6 +16,13 @@ func NewWorkSheet(project Project) *WorkSheet {
 }
 
 func (ws WorkSheet) Overassignments() map[*Developer][]time.Time {
-	overassignments := make(map[*Developer][]time.Time)
-	return overassignments
+	workingDatesByDeveloper := map[*Developer][]time.Time{}
+	ws.project.AddWorkingDatesByDeveloperTo(workingDatesByDeveloper)
+
+	overassignmentsByDeveloper := map[*Developer][]time.Time{}
+	for developer := range workingDatesByDeveloper {
+		overassignmentsByDeveloper[developer] = internal.ArrayWithRepeatedElements(workingDatesByDeveloper[developer])
+	}
+
+	return overassignmentsByDeveloper
 }
