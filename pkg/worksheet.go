@@ -15,14 +15,29 @@ func NewWorkSheet(aProject Project) *WorkSheet {
 	return ws
 }
 
-func (ws WorkSheet) Overassignments() map[*Developer][]map[time.Time]int {
-	return ws.numberOfWorkingDatesByDeveloper()
+func (ws WorkSheet) Overassignments() map[*Developer][]time.Time {
+	overassignedDatesForEachDeveloper := make(map[*Developer][]time.Time)
+	for developer, numberOfWorkingDates := range ws.numberOfWorkingDatesByDeveloper() {
+		overassignedDatesForEachDeveloper[developer] = ws.overassignedDates(numberOfWorkingDates)
+	}
+
+	return overassignedDatesForEachDeveloper
 }
 
-func (ws WorkSheet) numberOfWorkingDatesByDeveloper() map[*Developer][]map[time.Time]int {
-	numberOfTasksForEachDateByDeveloper := map[*Developer][]map[time.Time]int{}
+func (ws WorkSheet) overassignedDates(aNumberOfTasksForEachDate map[time.Time]int) []time.Time {
+	overassignedDates := []time.Time{}
+	for date, numberOfTasksInDate := range aNumberOfTasksForEachDate {
+		if numberOfTasksInDate > 1 {
+			overassignedDates = append(overassignedDates, date)
+		}
+	}
+	return overassignedDates
+}
+
+func (ws WorkSheet) numberOfWorkingDatesByDeveloper() map[*Developer]map[time.Time]int {
+	numberOfTasksForEachDateByDeveloper := map[*Developer]map[time.Time]int{}
 	for developer, workingDates := range ws.workingDatesByDeveloper() {
-		numberOfTasksForEachDateByDeveloper[developer] = internal.SliceWithNumberOfOccurrencesForEachElement(workingDates)
+		numberOfTasksForEachDateByDeveloper[developer] = internal.MapWithNumberOfOccurrencesForEachElement(workingDates)
 	}
 	return numberOfTasksForEachDateByDeveloper
 }

@@ -100,10 +100,8 @@ func Test13DeveloperWithoutOverAssignmentsReturnsEmptyCollection(t *testing.T) {
 	project := NewProject("Modelo", []Task{taskSSA})
 	worksheet := project.Worksheet()
 
-	overassignments := make(map[*Developer][]map[time.Time]int)
-	overassignments[danIngalls] = []map[time.Time]int{
-		map[time.Time]int{july1th: 1},
-	}
+	overassignments := make(map[*Developer][]time.Time)
+	overassignments[danIngalls] = []time.Time{}
 
 	assert.ElementsMatch(t, worksheet.Overassignments()[danIngalls], overassignments[danIngalls])
 }
@@ -114,17 +112,9 @@ func Test14DeveloperWithOverassignmentsReturnsArrayWithOverassignedDays(t *testi
 	project := NewProject("Modelo", []Task{taskSSA, taskSSB})
 	worksheet := project.Worksheet()
 
-	overassignments := make(map[*Developer][]map[time.Time]int)
-	overassignments[danIngalls] = []map[time.Time]int{
-		map[time.Time]int{july1th: 2},
-		map[time.Time]int{july2th: 1},
-		map[time.Time]int{july3th: 1},
-	}
-	overassignments[alanKay] = []map[time.Time]int{
-		map[time.Time]int{july1th: 1},
-		map[time.Time]int{july2th: 1},
-		map[time.Time]int{july3th: 1},
-	}
+	overassignments := make(map[*Developer][]time.Time)
+	overassignments[danIngalls] = []time.Time{july1th}
+	overassignments[alanKay] = []time.Time{}
 
 	assert.ElementsMatch(t, worksheet.Overassignments()[danIngalls], overassignments[danIngalls])
 	assert.ElementsMatch(t, worksheet.Overassignments()[alanKay], overassignments[alanKay])
@@ -140,23 +130,10 @@ func Test15DevelopersWithOverassignmentsReturnsArrayWithOverassignedDaysPerDevel
 
 	worksheet := systemERP.Worksheet()
 
-	overassignments := make(map[*Developer][]map[time.Time]int)
-	overassignments[danIngalls] = []map[time.Time]int{
-		map[time.Time]int{july1th: 2},
-		map[time.Time]int{july2th: 1},
-		map[time.Time]int{july3th: 1},
-	}
-	overassignments[alanKay] = []map[time.Time]int{
-		map[time.Time]int{july1th: 1},
-		map[time.Time]int{july2th: 1},
-		map[time.Time]int{july3th: 1},
-		map[time.Time]int{july4th: 1},
-		map[time.Time]int{july5th: 1},
-		map[time.Time]int{july6th: 1},
-	}
-	overassignments[adeleGoldberg] = []map[time.Time]int{
-		map[time.Time]int{july7th: 1},
-	}
+	overassignments := make(map[*Developer][]time.Time)
+	overassignments[danIngalls] = []time.Time{july1th}
+	overassignments[alanKay] = []time.Time{}
+	overassignments[adeleGoldberg] = []time.Time{}
 
 	assert.ElementsMatch(t, worksheet.Overassignments()[danIngalls], overassignments[danIngalls])
 	assert.ElementsMatch(t, worksheet.Overassignments()[alanKay], overassignments[alanKay])
