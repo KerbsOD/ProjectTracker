@@ -28,19 +28,20 @@ func Max[T any](anElement T, anotherElement T, compare func(a, b T) bool) T {
 	return anotherElement
 }
 
-func ArrayWithRepeatedElements[T comparable](arr []T) []T {
+func CountOccurrences[T comparable](slice []T) []map[T]int {
 	countMap := make(map[T]int)
-	for _, element := range arr {
+	for _, element := range slice {
 		countMap[element]++
 	}
 
-	repeatedElements := []T{}
-
+	var result []map[T]int
+	seen := make(map[T]struct{})
 	for element, count := range countMap {
-		if count > 1 {
-			repeatedElements = append(repeatedElements, element)
+		if _, ok := seen[element]; !ok {
+			result = append(result, map[T]int{element: count})
+			seen[element] = struct{}{}
 		}
 	}
 
-	return repeatedElements
+	return result
 }

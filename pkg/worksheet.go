@@ -15,13 +15,13 @@ func NewWorkSheet(project Project) *WorkSheet {
 	return ws
 }
 
-func (ws WorkSheet) Overassignments() map[*Developer][]time.Time {
+func (ws WorkSheet) Overassignments() map[*Developer][]map[time.Time]int {
 	workingDatesByDeveloper := map[*Developer][]time.Time{}
 	ws.project.AddWorkingDatesByDeveloperTo(workingDatesByDeveloper)
 
-	overassignmentsByDeveloper := map[*Developer][]time.Time{}
+	overassignmentsByDeveloper := map[*Developer][]map[time.Time]int{}
 	for developer := range workingDatesByDeveloper {
-		overassignmentsByDeveloper[developer] = internal.ArrayWithRepeatedElements(workingDatesByDeveloper[developer])
+		overassignmentsByDeveloper[developer] = internal.CountOccurrences(workingDatesByDeveloper[developer])
 	}
 
 	return overassignmentsByDeveloper
