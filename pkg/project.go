@@ -31,6 +31,12 @@ func (p Project) Worksheet() *WorkSheet {
 	return NewWorkSheet(p)
 }
 
+func (p Project) AddWorkingDatesByDeveloperTo(aWorkingDatesArrayByDeveloper map[*Developer][]time.Time) {
+	for _, subtask := range p.subtasks {
+		subtask.AddWorkingDatesByDeveloperTo(aWorkingDatesArrayByDeveloper)
+	}
+}
+
 func (p Project) earliestStartDateOfSubtasks() time.Time {
 	startDates := internal.Map(p.subtasks, func(aTask Task) time.Time { return aTask.StartDate() })
 	earliestFinishDate := internal.MinDateInArray(startDates)
