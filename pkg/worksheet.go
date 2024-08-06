@@ -6,21 +6,21 @@ import (
 )
 
 type WorkSheet struct {
-	project                            Project
-	numberOfDailyTasksForEachDeveloper map[*Developer]map[time.Time]int
+	project                 Project
+	workingDatesByDeveloper map[*Developer][]time.Time
 }
 
 func NewWorkSheet(aProject Project) *WorkSheet {
 	ws := new(WorkSheet)
 	ws.project = aProject
-	ws.numberOfDailyTasksForEachDeveloper = ws.numberOfTasksPerDateForEachDeveloper()
+	ws.workingDatesByDeveloper = ws.calculateWorkingDatesByDeveloper()
 	return ws
 }
 
 func (ws WorkSheet) Overassignments() map[*Developer][]time.Time {
 	overassignedDatesForEachDeveloper := make(map[*Developer][]time.Time)
-	for developer, numberOfTasksForEachDate := range ws.numberOfDailyTasksForEachDeveloper {
-		overassignedDatesForEachDeveloper[developer] = ws.overassignedDates(numberOfTasksForEachDate)
+	for developer, workingDates := range ws.workingDatesByDeveloper {
+		overassignedDatesForEachDeveloper[developer] = ws.overassignedDates(workingDates)
 	}
 
 	return overassignedDatesForEachDeveloper
@@ -35,25 +35,15 @@ func (ws WorkSheet) HasOverassignments() bool {
 	return false
 }
 
-func (ws WorkSheet) overassignedDates(aNumberOfTasksForEachDate map[time.Time]int) []time.Time {
-	overassignedDates := []time.Time{}
-	for date, numberOfTasksInDate := range aNumberOfTasksForEachDate {
-		if numberOfTasksInDate > 1 {
-			overassignedDates = append(overassignedDates, date)
-		}
-	}
-	return overassignedDates
+func (ws WorkSheet) TotalCost() int {
+	return 0
 }
 
-func (ws WorkSheet) numberOfTasksPerDateForEachDeveloper() map[*Developer]map[time.Time]int {
-	numberOfTasksForEachDateByDeveloper := map[*Developer]map[time.Time]int{}
-	for developer, workingDates := range ws.workingDatesByDeveloper() {
-		numberOfTasksForEachDateByDeveloper[developer] = internal.MapWithNumberOfOccurrencesForEachElement(workingDates)
-	}
-	return numberOfTasksForEachDateByDeveloper
+func (ws WorkSheet) overassignedDates(aWorkingDates []time.Time) []time.Time {
+	return internal.RepeatedElements(aWorkingDates)
 }
 
-func (ws WorkSheet) workingDatesByDeveloper() map[*Developer][]time.Time {
+func (ws WorkSheet) calculateWorkingDatesByDeveloper() map[*Developer][]time.Time {
 	workingDatesByDeveloper := map[*Developer][]time.Time{}
 	ws.project.AddWorkingDatesForEachDeveloper(workingDatesByDeveloper)
 	return workingDatesByDeveloper
