@@ -19,10 +19,6 @@ var parcMobTeam = NewTeam("Parc mob team", []Responsible{danIngalls, alanKay})
 var july1th = time.Date(2024, time.July, 1, 0, 0, 0, 0, time.UTC)
 var july2th = time.Date(2024, time.July, 2, 0, 0, 0, 0, time.UTC)
 var july3th = time.Date(2024, time.July, 3, 0, 0, 0, 0, time.UTC)
-var july4th = time.Date(2024, time.July, 4, 0, 0, 0, 0, time.UTC)
-var july5th = time.Date(2024, time.July, 5, 0, 0, 0, 0, time.UTC)
-var july6th = time.Date(2024, time.July, 6, 0, 0, 0, 0, time.UTC)
-var july7th = time.Date(2024, time.July, 7, 0, 0, 0, 0, time.UTC)
 
 func Test01ConcreteTaskFinishesInADayIfDeveloperDedicationsIsTaskEffort(t *testing.T) {
 	task := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
@@ -153,4 +149,47 @@ func Test17ProjectHavesOverassignmentsIfADeveloperWorksInMoreThanOneTaskInADate(
 	project := NewProject("modelo", []Task{taskSSA, taskSSB})
 	worksheet := project.Worksheet()
 	assert.True(t, worksheet.HasOverassignments())
+}
+
+func Test18ProjectWithOneDeveloperTotalCostIsDeveloperNumberOfWorkingDaysTimesRate(t *testing.T) {
+	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+	project := NewProject("Modelo", []Task{taskSSA})
+	worksheet := project.Worksheet()
+	assert.Equal(t, worksheet.TotalCost(), (8 * 60 * 1))
+	/*
+		- Dan Ingalls: 8*hour/day * 60*dollar/hour * 1*day = 480*dollar
+		-> Total: 960*dollar
+	*/
+}
+
+func Test19ProjectTotalCostIsTheSumOfTasksCost(t *testing.T) {
+	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+	taskSSB := NewConcreteTask("SS B", alanKay, july1th, 6, []Task{})
+	project := NewProject("modelo", []Task{taskSSA, taskSSB})
+	worksheet := project.Worksheet()
+
+	assert.Equal(t, worksheet.TotalCost(), (8*60*1)+(6*80*1))
+	/*
+		- Dan Ingalls: 8*hour/day * 60*dollar/hour * 1*day = 480*dollar
+		- Alan Kay: 6*hour/day * 80*dollar/hour * 1*day = 480*dollar
+		-> Total: 960*dollar
+	*/
+}
+func Test20ProjectOverAssignmentsSumToTotalCost(t *testing.T) {
+	SSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+	SSB := NewConcreteTask("SS B", parcMobTeam, july1th, 16, []Task{})
+	SSC := NewConcreteTask("SS C", alanKay, july2th, 16, []Task{SSA, SSB})
+	model := NewProject("Modelo", []Task{SSA, SSB, SSC})
+	UI := NewConcreteTask("UI", adeleGoldberg, july2th, 6, []Task{model})
+	systemERP := NewProject("Sistema ERP", []Task{model, UI})
+
+	worksheet := systemERP.Worksheet()
+
+	assert.Equal(t, worksheet.TotalCost(), 5450)
+	/*
+		- Dan Ingalls: 8*hour/day * 60*dollar/hour * 4*day = 1440*dollar (Dan is overassigned on July1th, so he charges double on that day)
+		- Alan Kay: 6*hour/day * 80*dollar/hour * 6*day = 2880*dollar
+		- Adele Goldberg: 10*hour/day * 65*dollar/hour * 1*day = 650*dollar
+		-> Total: 5450*dollar
+	*/
 }

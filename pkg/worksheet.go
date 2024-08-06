@@ -36,7 +36,12 @@ func (ws WorkSheet) HasOverassignments() bool {
 }
 
 func (ws WorkSheet) TotalCost() int {
-	return 0
+	totalCost := 0
+	for developer, workingDates := range ws.workingDatesByDeveloper {
+		aNumberOfDays := len(workingDates)
+		totalCost = totalCost + developer.CostForWorking(aNumberOfDays)
+	}
+	return totalCost
 }
 
 func (ws WorkSheet) overassignedDates(aWorkingDates []time.Time) []time.Time {
