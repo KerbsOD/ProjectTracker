@@ -32,3 +32,7 @@ func (d *Developer) AddWorkingDatesForEachDeveloper(aSliceOfContiguousDates []ti
 	}
 	aWorkingDatesArrayForEachDeveloper[d] = append(aWorkingDatesArrayForEachDeveloper[d], aSliceOfContiguousDates...)
 }
+
+func (d *Developer) CostForWorking(aNumberOfDays int) int {
+	return d.rate * d.dedication * aNumberOfDays
+}
