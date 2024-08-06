@@ -1,6 +1,8 @@
 package internal
 
-import "time"
+import (
+	"time"
+)
 
 const Day = 24 * time.Hour
 
@@ -18,4 +20,14 @@ func MaxDateInArray(array []time.Time) time.Time {
 
 func MinDateInArray(array []time.Time) time.Time {
 	return MaximizeElementByComparer(array, time.Time.Before)
+}
+
+func DatesBetween(startDate, endDate time.Time) []time.Time {
+	dates := []time.Time{}
+	for currentDate := startDate; currentDate.Before(endDate); currentDate.Add(Day) {
+		dates = append(dates, currentDate)
+	}
+
+	dates = append(dates, endDate)
+	return dates
 }

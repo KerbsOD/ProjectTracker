@@ -25,3 +25,10 @@ func (d Developer) DaysToFinish(effort int) time.Duration {
 	fullWorkDays := time.Duration(workSessions) * internal.Day
 	return fullWorkDays
 }
+
+func (d *Developer) AddDatesToDeveloper(datesPerDeveloper map[*Developer][]time.Time, workingDates []time.Time) {
+	if _, ok := datesPerDeveloper[d]; !ok {
+		datesPerDeveloper[d] = []time.Time{}
+	}
+	datesPerDeveloper[d] = append(datesPerDeveloper[d], workingDates...)
+}

@@ -43,3 +43,11 @@ func (ct ConcreteTask) latestFinishDateOfSubtasks() time.Time {
 	latestFinishDate := internal.MaxDateInArray(finishDates)
 	return latestFinishDate
 }
+
+func (ct ConcreteTask) AddWorkingDatesByDeveloperTo(aWorkingDatesArrayByDeveloper map[*Developer][]time.Time) {
+	ct.responsible.AddDatesToDeveloper(aWorkingDatesArrayByDeveloper, ct.workingDates())
+}
+
+func (ct ConcreteTask) workingDates() []time.Time {
+	return internal.DatesBetween(ct.StartDate(), ct.FinishDate())
+}
