@@ -27,3 +27,9 @@ func (t Team) daysToCompleteTaskForEachResponsible(effort int) []time.Duration {
 	daysToCompleteForEachResponsible := internal.Map(t.responsibles, func(aResponsible Responsible) time.Duration { return aResponsible.DaysToFinish(effort) })
 	return daysToCompleteForEachResponsible
 }
+
+func (t Team) AddDatesToDeveloper(datesPerDeveloper map[*Developer][]time.Time, workingDates []time.Time) {
+	for _, responsible := range t.responsibles {
+		responsible.AddDatesToDeveloper(datesPerDeveloper, workingDates)
+	}
+}
