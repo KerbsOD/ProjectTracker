@@ -9,20 +9,26 @@ type WorkSheet struct {
 	project Project
 }
 
-func NewWorkSheet(project Project) *WorkSheet {
+func NewWorkSheet(aProject Project) *WorkSheet {
 	ws := new(WorkSheet)
-	ws.project = project
+	ws.project = aProject
 	return ws
 }
 
 func (ws WorkSheet) Overassignments() map[*Developer][]map[time.Time]int {
-	workingDatesByDeveloper := map[*Developer][]time.Time{}
-	ws.project.AddWorkingDatesByDeveloperTo(workingDatesByDeveloper)
+	return ws.numberOfWorkingDatesByDeveloper()
+}
 
-	overassignmentsByDeveloper := map[*Developer][]map[time.Time]int{}
-	for developer := range workingDatesByDeveloper {
-		overassignmentsByDeveloper[developer] = internal.CountOccurrences(workingDatesByDeveloper[developer])
+func (ws WorkSheet) numberOfWorkingDatesByDeveloper() map[*Developer][]map[time.Time]int {
+	numberOfTasksForEachDateByDeveloper := map[*Developer][]map[time.Time]int{}
+	for developer, workingDates := range ws.workingDatesByDeveloper() {
+		numberOfTasksForEachDateByDeveloper[developer] = internal.SliceWithNumberOfOccurrencesForEachElement(workingDates)
 	}
+	return numberOfTasksForEachDateByDeveloper
+}
 
-	return overassignmentsByDeveloper
+func (ws WorkSheet) workingDatesByDeveloper() map[*Developer][]time.Time {
+	workingDatesByDeveloper := map[*Developer][]time.Time{}
+	ws.project.AddWorkingDatesForEachDeveloper(workingDatesByDeveloper)
+	return workingDatesByDeveloper
 }
