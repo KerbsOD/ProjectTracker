@@ -13,13 +13,13 @@ type ConcreteTask struct {
 	dependents   []Task
 }
 
-func NewConcreteTask(name string, responsible Responsible, desiredDate time.Time, effort int, dependents []Task) *ConcreteTask {
+func NewConcreteTask(aName string, aResponsible Responsible, aDesiredStartingDate time.Time, anEffort int, aSliceOfDependentTasks []Task) *ConcreteTask {
 	t := new(ConcreteTask)
-	t.name = name
-	t.responsible = responsible
-	t.expectedDate = desiredDate
-	t.effort = effort
-	t.dependents = dependents
+	t.name = aName
+	t.responsible = aResponsible
+	t.expectedDate = aDesiredStartingDate
+	t.effort = anEffort
+	t.dependents = aSliceOfDependentTasks
 	return t
 }
 
@@ -44,8 +44,9 @@ func (ct ConcreteTask) latestFinishDateOfSubtasks() time.Time {
 	return latestFinishDate
 }
 
-func (ct ConcreteTask) AddWorkingDatesByDeveloperTo(aWorkingDatesArrayByDeveloper map[*Developer][]time.Time) {
-	ct.responsible.AddDatesToDeveloper(aWorkingDatesArrayByDeveloper, ct.workingDates())
+func (ct ConcreteTask) AddWorkingDatesForEachDeveloper(aWorkingDatesArrayForEachDeveloper map[*Developer][]time.Time) {
+	taskWorkingDates := ct.workingDates()
+	ct.responsible.AddWorkingDatesForEachDeveloper(taskWorkingDates, aWorkingDatesArrayForEachDeveloper)
 }
 
 func (ct ConcreteTask) workingDates() []time.Time {

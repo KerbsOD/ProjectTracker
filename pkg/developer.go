@@ -12,23 +12,23 @@ type Developer struct {
 	rate       int
 }
 
-func NewDeveloper(name string, dedication int, rate int) *Developer {
+func NewDeveloper(aName string, aDedication int, aRate int) *Developer {
 	d := new(Developer)
-	d.name = name
-	d.dedication = dedication
-	d.rate = rate
+	d.name = aName
+	d.dedication = aDedication
+	d.rate = aRate
 	return d
 }
 
-func (d Developer) DaysToFinish(effort int) time.Duration {
-	workSessions := int(math.Ceil(float64(effort) / float64(d.dedication)))
+func (d Developer) DaysToFinish(anEffort int) time.Duration {
+	workSessions := int(math.Ceil(float64(anEffort) / float64(d.dedication)))
 	fullWorkDays := time.Duration(workSessions) * internal.Day
 	return fullWorkDays
 }
 
-func (d *Developer) AddDatesToDeveloper(datesPerDeveloper map[*Developer][]time.Time, workingDates []time.Time) {
-	if _, ok := datesPerDeveloper[d]; !ok {
-		datesPerDeveloper[d] = []time.Time{}
+func (d *Developer) AddWorkingDatesForEachDeveloper(aSliceOfContiguousDates []time.Time, aWorkingDatesArrayForEachDeveloper map[*Developer][]time.Time) {
+	if _, ok := aWorkingDatesArrayForEachDeveloper[d]; !ok {
+		aWorkingDatesArrayForEachDeveloper[d] = []time.Time{}
 	}
-	datesPerDeveloper[d] = append(datesPerDeveloper[d], workingDates...)
+	aWorkingDatesArrayForEachDeveloper[d] = append(aWorkingDatesArrayForEachDeveloper[d], aSliceOfContiguousDates...)
 }

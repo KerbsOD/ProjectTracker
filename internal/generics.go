@@ -28,7 +28,7 @@ func Max[T any](anElement T, anotherElement T, compare func(a, b T) bool) T {
 	return anotherElement
 }
 
-func CountOccurrences[T comparable](slice []T) []map[T]int {
+func SliceWithNumberOfOccurrencesForEachElement[T comparable](slice []T) []map[T]int {
 	countMap := make(map[T]int)
 	for _, element := range slice {
 		countMap[element]++
