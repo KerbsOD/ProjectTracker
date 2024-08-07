@@ -303,14 +303,12 @@ func (suite *ProjectTestSuite) Test30ConcreteTaskCanNotHaveDirectRepeatedDepende
 
 func (suite *ProjectTestSuite) Test31ProjectNameCanNotBeEmpty() {
 	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
-
 	assert.PanicsWithError(suite.T(), internal.InvalidProjectNameErrorMessage, func() {
 		NewProject("", []Task{taskSSA})
 	})
 }
 
 func (suite *ProjectTestSuite) Test32ProjectCanNotHaveEmptySubtasks() {
-
 	assert.PanicsWithError(suite.T(), internal.InvalidProjectSubtasksErrorMessage, func() {
 		NewProject("UI", []Task{})
 	})

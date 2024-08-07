@@ -22,7 +22,7 @@ func NewDeveloper(aName string, aDedication int, aRate int) *Developer {
 	return d
 }
 
-func (d Developer) DaysToFinish(anEffort int) time.Duration {
+func (d *Developer) DaysToFinish(anEffort int) time.Duration {
 	workSessions := int(math.Ceil(float64(anEffort) / float64(d.dedication)))
 	fullWorkDays := time.Duration(workSessions) * internal.Day
 	return fullWorkDays
@@ -39,7 +39,7 @@ func (d *Developer) AddResponsiblesTo(aCollector *[]Responsible) {
 	*aCollector = append(*aCollector, d)
 }
 
-func (d Developer) CostForWorking(aNumberOfDays int) int {
+func (d *Developer) CostForWorking(aNumberOfDays int) int {
 	return d.rate * d.dedication * aNumberOfDays
 }
 
