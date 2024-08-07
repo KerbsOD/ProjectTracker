@@ -4,7 +4,6 @@ import (
 	"Project/internal"
 	"errors"
 	"math"
-	"strings"
 	"time"
 )
 
@@ -36,13 +35,17 @@ func (d *Developer) AddWorkingDatesForEachDeveloper(aSliceOfContiguousDates []ti
 	aWorkingDatesArrayForEachDeveloper[d] = append(aWorkingDatesArrayForEachDeveloper[d], aSliceOfContiguousDates...)
 }
 
+func (d *Developer) AddResponsiblesTo(aCollector *[]Responsible) {
+	*aCollector = append(*aCollector, d)
+}
+
 func (d Developer) CostForWorking(aNumberOfDays int) int {
 	return d.rate * d.dedication * aNumberOfDays
 }
 
-func (d *Developer) AddResponsiblesTo(aCollector *[]Responsible) {
-	*aCollector = append(*aCollector, d)
-}
+/*
+	PRIVATE
+*/
 
 func assertValidDeveloper(aName string, aDedication int, aRate int) {
 	assertValidDeveloperName(aName)
@@ -50,21 +53,20 @@ func assertValidDeveloper(aName string, aDedication int, aRate int) {
 	assertValidRate(aRate)
 }
 
-func assertValidRate(aRate int) {
-	if aRate < 1 {
-		panic(errors.New("developer rate per hour must be positive"))
+func assertValidDeveloperName(aName string) {
+	if internal.EmptyName(aName) {
+		panic(errors.New(internal.InvalidDeveloperNameErrorMessage))
 	}
 }
 
 func assertValidDedication(aDedication int) {
 	if aDedication < 1 {
-		panic(errors.New("developer dedication must be positive"))
+		panic(errors.New(internal.InvalidDeveloperDedicationErrorMessage))
 	}
 }
 
-func assertValidDeveloperName(aName string) {
-	nameWithoutSpaces := strings.Replace(aName, " ", "", -1)
-	if len(nameWithoutSpaces) == 0 {
-		panic(errors.New("developer name can not be empty"))
+func assertValidRate(aRate int) {
+	if aRate < 1 {
+		panic(errors.New(internal.InvalidDeveloperRateErrorMessage))
 	}
 }

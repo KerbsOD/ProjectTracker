@@ -216,83 +216,83 @@ func (suite *ProjectTestSuite) Test20ProjectOverAssignmentsSumToTotalCost() {
 }
 
 func (suite *ProjectTestSuite) Test21DeveloperNameCanNotBeEmpty() {
-	assert.PanicsWithError(suite.T(), internal.EmptyDeveloperNameErrorString, func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperNameErrorMessage, func() {
 		NewDeveloper("", 8, 60)
 	})
-	assert.PanicsWithError(suite.T(), internal.EmptyDeveloperNameErrorString, func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperNameErrorMessage, func() {
 		NewDeveloper(" ", 8, 60)
 	})
 }
 
 func (suite *ProjectTestSuite) Test22DeveloperDedicationMustBePositive() {
-	assert.PanicsWithError(suite.T(), "developer dedication must be positive", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperDedicationErrorMessage, func() {
 		NewDeveloper("Dan Ingalls", 0, 60)
 	})
-	assert.PanicsWithError(suite.T(), "developer dedication must be positive", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperDedicationErrorMessage, func() {
 		NewDeveloper("Dan Ingalls", -3, 60)
 	})
 }
 
 func (suite *ProjectTestSuite) Test23DeveloperRateMustBePositive() {
-	assert.PanicsWithError(suite.T(), "developer rate per hour must be positive", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperRateErrorMessage, func() {
 		NewDeveloper("Dan Ingalls", 8, 0)
 	})
-	assert.PanicsWithError(suite.T(), "developer rate per hour must be positive", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperRateErrorMessage, func() {
 		NewDeveloper("Dan Ingalls", 8, -20)
 	})
 }
 
 func (suite *ProjectTestSuite) Test24TeamNameCanNotBeEmpty() {
-	assert.PanicsWithError(suite.T(), "team name can not be empty", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidTeamNameErrorMessage, func() {
 		NewTeam("", []Responsible{suite.danIngalls})
 	})
-	assert.PanicsWithError(suite.T(), "team name can not be empty", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidTeamNameErrorMessage, func() {
 		NewTeam(" ", []Responsible{suite.danIngalls})
 	})
 }
 
 func (suite *ProjectTestSuite) Test25TeamMustBeComposedOfSubteamsOrDevelopers() {
-	assert.PanicsWithError(suite.T(), "team must be composed of subteams or developers", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidTeamResponsibleErrorMessage, func() {
 		NewTeam("Parc mob team", []Responsible{})
 	})
 }
 
 func (suite *ProjectTestSuite) Test26TeamCanNotHaveRepeatedSubteamsOrDevelopers() {
-	assert.PanicsWithError(suite.T(), "team can not have duplicated responsible", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidTeamResponsibleErrorMessage, func() {
 		NewTeam("Team Dynamite", []Responsible{suite.alanKay, suite.alanKay})
 	})
-	assert.PanicsWithError(suite.T(), "team can not have duplicated responsible", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidTeamResponsibleErrorMessage, func() {
 		NewTeam("Team Super Cool", []Responsible{suite.parcMobTeam, suite.parcMobTeam})
 	})
 }
 
 func (suite *ProjectTestSuite) Test27TeamCanNotHaveRepeatedSubteamsOrDevelopersWithinSubteams() {
-	assert.PanicsWithError(suite.T(), "team can not have duplicated responsible", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidTeamResponsibleErrorMessage, func() {
 		NewTeam("Team Super Cool", []Responsible{suite.alanKay, suite.parcMobTeam})
 	})
 }
 
 func (suite *ProjectTestSuite) Test28ConcreteTaskNameCanNotBeEmpty() {
-	assert.PanicsWithError(suite.T(), "concrete task name can not be empty", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskNameErrorMessage, func() {
 		NewConcreteTask("", suite.danIngalls, suite.july1th, 8, []Task{})
 	})
-	assert.PanicsWithError(suite.T(), "concrete task name can not be empty", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskNameErrorMessage, func() {
 		NewConcreteTask(" ", suite.danIngalls, suite.july1th, 8, []Task{})
 	})
 }
 
 func (suite *ProjectTestSuite) Test29ConcreteTaskEffortMustBePositive() {
-	assert.PanicsWithError(suite.T(), "concrete task effort must be positive", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskEffortErrorMessage, func() {
 		NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 0, []Task{})
 	})
-	assert.PanicsWithError(suite.T(), "concrete task effort must be positive", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskEffortErrorMessage, func() {
 		NewConcreteTask("SS B", suite.danIngalls, suite.july1th, -8, []Task{})
 	})
 }
 
 func (suite *ProjectTestSuite) Test30ConcreteTaskCanNotHaveDirectRepeatedDependentsTasks() {
 	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
-	assert.PanicsWithError(suite.T(), "concrete task can not have direct repeated tasks", func() {
+	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskDependentsErrorMessage, func() {
 		NewConcreteTask("SS B", suite.parcMobTeam, suite.july1th, 16, []Task{taskSSA, taskSSA})
 	})
 	/*
@@ -303,13 +303,15 @@ func (suite *ProjectTestSuite) Test30ConcreteTaskCanNotHaveDirectRepeatedDepende
 
 func (suite *ProjectTestSuite) Test31ProjectNameCanNotBeEmpty() {
 	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
-	assert.PanicsWithError(suite.T(), "project name can not be empty", func() {
+
+	assert.PanicsWithError(suite.T(), internal.InvalidProjectNameErrorMessage, func() {
 		NewProject("", []Task{taskSSA})
 	})
 }
 
 func (suite *ProjectTestSuite) Test32ProjectCanNotHaveEmptySubtasks() {
-	assert.PanicsWithError(suite.T(), "project must have at least one subtask", func() {
+
+	assert.PanicsWithError(suite.T(), internal.InvalidProjectSubtasksErrorMessage, func() {
 		NewProject("UI", []Task{})
 	})
 }

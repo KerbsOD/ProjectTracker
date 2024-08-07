@@ -3,7 +3,6 @@ package pkg
 import (
 	"Project/internal"
 	"errors"
-	"strings"
 	"time"
 )
 
@@ -26,31 +25,6 @@ func NewConcreteTask(aName string, aResponsible Responsible, aDesiredStartingDat
 	return t
 }
 
-func assertValidConcreteTask(aName string, anEffort int, aSliceOfDependentTasks []Task) {
-	assertValidConcreteTaskName(aName)
-	assertValidEffort(anEffort)
-	assertValidDependents(aSliceOfDependentTasks)
-}
-
-func assertValidDependents(aSliceOfDependentTasks []Task) {
-	if len(internal.RepeatedElements(aSliceOfDependentTasks)) > 0 {
-		panic(errors.New("concrete task can not have direct repeated tasks"))
-	}
-}
-
-func assertValidEffort(anEffort int) {
-	if anEffort <= 0 {
-		panic(errors.New("concrete task effort must be positive"))
-	}
-}
-
-func assertValidConcreteTaskName(aName string) {
-	nameWithoutSpaces := strings.Replace(aName, " ", "", -1)
-	if len(nameWithoutSpaces) == 0 {
-		panic(errors.New("concrete task name can not be empty"))
-	}
-}
-
 func (ct ConcreteTask) StartDate() time.Time {
 	if len(ct.dependents) == 0 {
 		return ct.expectedDate
@@ -66,15 +40,43 @@ func (ct ConcreteTask) FinishDate() time.Time {
 	return finishDate
 }
 
+func (ct ConcreteTask) AddWorkingDatesForEachDeveloper(aWorkingDatesArrayForEachDeveloper map[*Developer][]time.Time) {
+	taskWorkingDates := ct.workingDates()
+	ct.responsible.AddWorkingDatesForEachDeveloper(taskWorkingDates, aWorkingDatesArrayForEachDeveloper)
+}
+
+/*
+	PRIVATE
+*/
+
+func assertValidConcreteTask(aName string, anEffort int, aSliceOfDependentTasks []Task) {
+	assertValidConcreteTaskName(aName)
+	assertValidEffort(anEffort)
+	assertValidDependents(aSliceOfDependentTasks)
+}
+
+func assertValidConcreteTaskName(aName string) {
+	if internal.EmptyName(aName) {
+		panic(errors.New(internal.InvalidConcreteTaskNameErrorMessage))
+	}
+}
+
+func assertValidEffort(anEffort int) {
+	if anEffort <= 0 {
+		panic(errors.New(internal.InvalidConcreteTaskEffortErrorMessage))
+	}
+}
+
+func assertValidDependents(aSliceOfDependentTasks []Task) {
+	if len(internal.RepeatedElements(aSliceOfDependentTasks)) > 0 {
+		panic(errors.New(internal.InvalidConcreteTaskDependentsErrorMessage))
+	}
+}
+
 func (ct ConcreteTask) latestFinishDateOfSubtasks() time.Time {
 	finishDates := internal.Map(ct.dependents, func(aTask Task) time.Time { return aTask.FinishDate() })
 	latestFinishDate := internal.MaxDateInArray(finishDates)
 	return latestFinishDate
-}
-
-func (ct ConcreteTask) AddWorkingDatesForEachDeveloper(aWorkingDatesArrayForEachDeveloper map[*Developer][]time.Time) {
-	taskWorkingDates := ct.workingDates()
-	ct.responsible.AddWorkingDatesForEachDeveloper(taskWorkingDates, aWorkingDatesArrayForEachDeveloper)
 }
 
 func (ct ConcreteTask) workingDates() []time.Time {

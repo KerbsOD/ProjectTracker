@@ -3,7 +3,6 @@ package pkg
 import (
 	"Project/internal"
 	"errors"
-	"strings"
 	"time"
 )
 
@@ -39,16 +38,29 @@ func (t Team) AddResponsiblesTo(aCollector *[]Responsible) {
 	}
 }
 
+/*
+	PRIVATE
+*/
+
 func assertValidTeam(aName string, aResponsibles []Responsible) {
 	assertValidTeamName(aName)
+	assertValidResponsible(aResponsibles)
+}
+
+func assertValidTeamName(aName string) {
+	if internal.EmptyName(aName) {
+		panic(errors.New(internal.InvalidTeamNameErrorMessage))
+	}
+}
+
+func assertValidResponsible(aResponsibles []Responsible) {
 	assertNotEmptyResponsible(aResponsibles)
 	assertNotRepeatedResponsible(aResponsibles)
 }
 
-func assertValidTeamName(aName string) {
-	nameWithoutSpaces := strings.Replace(aName, " ", "", -1)
-	if len(nameWithoutSpaces) == 0 {
-		panic(errors.New("team name can not be empty"))
+func assertNotEmptyResponsible(aResponsibles []Responsible) {
+	if len(aResponsibles) == 0 {
+		panic(errors.New(internal.InvalidTeamResponsibleErrorMessage))
 	}
 }
 
@@ -59,13 +71,7 @@ func assertNotRepeatedResponsible(aResponsibles []Responsible) {
 	}
 
 	if len(internal.RepeatedElements(aResponsibleCollector)) > 0 {
-		panic(errors.New("team can not have duplicated responsible"))
-	}
-}
-
-func assertNotEmptyResponsible(aResponsibles []Responsible) {
-	if len(aResponsibles) == 0 {
-		panic(errors.New("team must be composed of subteams or developers"))
+		panic(errors.New(internal.InvalidTeamResponsibleErrorMessage))
 	}
 }
 

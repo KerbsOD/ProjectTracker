@@ -1,5 +1,9 @@
 package internal
 
+import (
+	"strings"
+)
+
 func Map[T, V any](ts []T, fn func(T) V) []V {
 	result := make([]V, len(ts))
 	for i, t := range ts {
@@ -42,4 +46,9 @@ func RepeatedElements[T comparable](slice []T) []T {
 	}
 
 	return result
+}
+
+func EmptyName(aName string) bool {
+	nameWithoutSpaces := strings.Replace(aName, " ", "", -1)
+	return len(nameWithoutSpaces) == 0
 }
