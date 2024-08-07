@@ -2,190 +2,210 @@ package pkg
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"testing"
 	"time"
 )
 
-// Developers
-var danIngalls = NewDeveloper("Dan Ingalls", 8, 60)
-var alanKay = NewDeveloper("Alan Kay", 6, 80)
-var adeleGoldberg = NewDeveloper("Adele Goldberg", 10, 65)
-
-// Teams
-var danTeam = NewTeam("Dan team", []Responsible{danIngalls})
-var parcMobTeam = NewTeam("Parc mob team", []Responsible{danIngalls, alanKay})
-
-// Dates
-var july1th = time.Date(2024, time.July, 1, 0, 0, 0, 0, time.UTC)
-var july2th = time.Date(2024, time.July, 2, 0, 0, 0, 0, time.UTC)
-var july3th = time.Date(2024, time.July, 3, 0, 0, 0, 0, time.UTC)
-
-func Test01ConcreteTaskFinishesInADayIfDeveloperDedicationsIsTaskEffort(t *testing.T) {
-	task := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	assert.Equal(t, july1th, task.FinishDate())
+type ProjectTestSuite struct {
+	suite.Suite
+	danIngalls    *Developer
+	alanKay       *Developer
+	adeleGoldberg *Developer
+	danTeam       *Team
+	parcMobTeam   *Team
+	july1th       time.Time
+	july2th       time.Time
+	july3th       time.Time
 }
 
-func Test02ConcreteTaskDoesNotFinishesInADayIfDeveloperDedicationIsLessThanTaskEffort(t *testing.T) {
-	task := NewConcreteTask("SS A", alanKay, july1th, 8, []Task{})
-	assert.Equal(t, july2th, task.FinishDate())
+func TestProjectTestSuite(t *testing.T) {
+	suite.Run(t, new(ProjectTestSuite))
 }
 
-func Test03ConcreteTaskStartsOnAfterDependentsFinish(t *testing.T) {
-	task1 := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	task2 := NewConcreteTask("SS B", danIngalls, july1th, 8, []Task{task1})
-	assert.Equal(t, july2th, task2.FinishDate())
+func (suite *ProjectTestSuite) SetupTest() {
+	// Developers
+	suite.danIngalls = NewDeveloper("Dan Ingalls", 8, 60)
+	suite.alanKay = NewDeveloper("Alan Kay", 6, 80)
+	suite.adeleGoldberg = NewDeveloper("Adele Goldberg", 10, 65)
+
+	// Teams
+	suite.danTeam = NewTeam("Dan team", []Responsible{suite.danIngalls})
+	suite.parcMobTeam = NewTeam("Parc mob team", []Responsible{suite.danIngalls, suite.alanKay})
+
+	// Dates
+	suite.july1th = time.Date(2024, time.July, 1, 0, 0, 0, 0, time.UTC)
+	suite.july2th = time.Date(2024, time.July, 2, 0, 0, 0, 0, time.UTC)
+	suite.july3th = time.Date(2024, time.July, 3, 0, 0, 0, 0, time.UTC)
 }
 
-func Test04ConcreteTaskDoesNotStartBeforeDesiredStartingDate(t *testing.T) {
-	task1 := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	task2 := NewConcreteTask("SS B", alanKay, july3th, 8, []Task{task1})
-	assert.Equal(t, july3th, task2.StartDate())
+func (suite *ProjectTestSuite) Test01ConcreteTaskFinishesInADayIfDeveloperDedicationsIsTaskEffort() {
+	task := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	assert.Equal(suite.T(), suite.july1th, task.FinishDate())
 }
 
-func Test05ConcreteTaskDoesNotStartTheSameDayItsDependentsEnd(t *testing.T) {
-	task1 := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	task2 := NewConcreteTask("SS B", danIngalls, july1th, 8, []Task{task1})
-	assert.NotEqual(t, july1th, task2.StartDate())
+func (suite *ProjectTestSuite) Test02ConcreteTaskDoesNotFinishesInADayIfDeveloperDedicationIsLessThanTaskEffort() {
+	task := NewConcreteTask("SS A", suite.alanKay, suite.july1th, 8, []Task{})
+	assert.Equal(suite.T(), suite.july2th, task.FinishDate())
 }
 
-func Test06ConcreteTaskStartsAfterGreatestFinishDateInDependents(t *testing.T) {
-	task1 := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	task2 := NewConcreteTask("SS B", danIngalls, july1th, 16, []Task{})
-	task3 := NewConcreteTask("SS C", danIngalls, july1th, 16, []Task{task1, task2})
-	assert.Equal(t, july3th, task3.StartDate())
+func (suite *ProjectTestSuite) Test03ConcreteTaskStartsOnAfterDependentsFinish() {
+	task1 := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	task2 := NewConcreteTask("SS B", suite.danIngalls, suite.july1th, 8, []Task{task1})
+	assert.Equal(suite.T(), suite.july2th, task2.FinishDate())
 }
 
-func Test07ConcreteTaskTimeToFinishForTeamWithOneDeveloperIsDeveloperTimeToFinish(t *testing.T) {
-	task := NewConcreteTask("SS A", danTeam, july1th, 16, []Task{})
-	assert.Equal(t, july2th, task.FinishDate())
+func (suite *ProjectTestSuite) Test04ConcreteTaskDoesNotStartBeforeDesiredStartingDate() {
+	task1 := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	task2 := NewConcreteTask("SS B", suite.alanKay, suite.july3th, 8, []Task{task1})
+	assert.Equal(suite.T(), suite.july3th, task2.StartDate())
 }
 
-func Test08ConcreteTaskTimeToFinishDependsOnSlowestDeveloper(t *testing.T) {
-	task := NewConcreteTask("SS A", parcMobTeam, july1th, 16, []Task{})
-	assert.Equal(t, july3th, task.FinishDate())
+func (suite *ProjectTestSuite) Test05ConcreteTaskDoesNotStartTheSameDayItsDependentsEnd() {
+	task1 := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	task2 := NewConcreteTask("SS B", suite.danIngalls, suite.july1th, 8, []Task{task1})
+	assert.NotEqual(suite.T(), suite.july1th, task2.StartDate())
 }
 
-func Test09ProjectStartDateWithOneSubTaskIsSubtaskStartDate(t *testing.T) {
-	task := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+func (suite *ProjectTestSuite) Test06ConcreteTaskStartsAfterGreatestFinishDateInDependents() {
+	task1 := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	task2 := NewConcreteTask("SS B", suite.danIngalls, suite.july1th, 16, []Task{})
+	task3 := NewConcreteTask("SS C", suite.danIngalls, suite.july1th, 16, []Task{task1, task2})
+	assert.Equal(suite.T(), suite.july3th, task3.StartDate())
+}
+
+func (suite *ProjectTestSuite) Test07ConcreteTaskTimeToFinishForTeamWithOneDeveloperIsDeveloperTimeToFinish() {
+	task := NewConcreteTask("SS A", suite.danTeam, suite.july1th, 16, []Task{})
+	assert.Equal(suite.T(), suite.july2th, task.FinishDate())
+}
+
+func (suite *ProjectTestSuite) Test08ConcreteTaskTimeToFinishDependsOnSlowestDeveloper() {
+	task := NewConcreteTask("SS A", suite.parcMobTeam, suite.july1th, 16, []Task{})
+	assert.Equal(suite.T(), suite.july3th, task.FinishDate())
+}
+
+func (suite *ProjectTestSuite) Test09ProjectStartDateWithOneSubTaskIsSubtaskStartDate() {
+	task := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
 	project := NewProject("UI", []Task{task})
-	assert.Equal(t, july1th, project.StartDate())
+	assert.Equal(suite.T(), suite.july1th, project.StartDate())
 }
 
-func Test10ProjectStartDateIsSubtasksEarliestStartDate(t *testing.T) {
-	taskSSA := NewConcreteTask("SS A", danIngalls, july3th, 8, []Task{})
-	taskSSB := NewConcreteTask("SS B", parcMobTeam, july2th, 16, []Task{})
+func (suite *ProjectTestSuite) Test10ProjectStartDateIsSubtasksEarliestStartDate() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july3th, 8, []Task{})
+	taskSSB := NewConcreteTask("SS B", suite.parcMobTeam, suite.july2th, 16, []Task{})
 	project := NewProject("Modelo", []Task{taskSSA, taskSSB})
-	assert.Equal(t, july2th, project.StartDate())
+	assert.Equal(suite.T(), suite.july2th, project.StartDate())
 }
 
-func Test11ProjectFinishDateWithOneSubTaskIsSubtaskFinishDate(t *testing.T) {
-	task := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+func (suite *ProjectTestSuite) Test11ProjectFinishDateWithOneSubTaskIsSubtaskFinishDate() {
+	task := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
 	project := NewProject("UI", []Task{task})
-	assert.Equal(t, july1th, project.FinishDate())
+	assert.Equal(suite.T(), suite.july1th, project.FinishDate())
 }
 
-func Test12ProjectFinishDateIsSubtasksLatestFinishDate(t *testing.T) {
-	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	taskSSB := NewConcreteTask("SS B", parcMobTeam, july1th, 16, []Task{})
+func (suite *ProjectTestSuite) Test12ProjectFinishDateIsSubtasksLatestFinishDate() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	taskSSB := NewConcreteTask("SS B", suite.parcMobTeam, suite.july1th, 16, []Task{})
 	project := NewProject("Modelo", []Task{taskSSA, taskSSB})
-	assert.Equal(t, july3th, project.FinishDate())
+	assert.Equal(suite.T(), suite.july3th, project.FinishDate())
 }
 
-func Test13DeveloperWithoutOverAssignmentsReturnsEmptyCollection(t *testing.T) {
-	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+func (suite *ProjectTestSuite) Test13DeveloperWithoutOverAssignmentsReturnsEmptyCollection() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
 	project := NewProject("Modelo", []Task{taskSSA})
 	worksheet := project.Worksheet()
 
 	overassignments := make(map[*Developer][]time.Time)
-	overassignments[danIngalls] = []time.Time{}
+	overassignments[suite.danIngalls] = []time.Time{}
 
-	assert.ElementsMatch(t, worksheet.Overassignments()[danIngalls], overassignments[danIngalls])
+	assert.ElementsMatch(suite.T(), worksheet.Overassignments()[suite.danIngalls], overassignments[suite.danIngalls])
 }
 
-func Test14DeveloperWithOverassignmentsReturnsArrayWithOverassignedDays(t *testing.T) {
-	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	taskSSB := NewConcreteTask("SS B", parcMobTeam, july1th, 16, []Task{})
+func (suite *ProjectTestSuite) Test14DeveloperWithOverassignmentsReturnsArrayWithOverassignedDays() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	taskSSB := NewConcreteTask("SS B", suite.parcMobTeam, suite.july1th, 16, []Task{})
 	project := NewProject("modelo", []Task{taskSSA, taskSSB})
 	worksheet := project.Worksheet()
 
 	overassignments := make(map[*Developer][]time.Time)
-	overassignments[danIngalls] = []time.Time{july1th}
-	overassignments[alanKay] = []time.Time{}
+	overassignments[suite.danIngalls] = []time.Time{suite.july1th}
+	overassignments[suite.alanKay] = []time.Time{}
 
-	assert.ElementsMatch(t, worksheet.Overassignments()[danIngalls], overassignments[danIngalls])
-	assert.ElementsMatch(t, worksheet.Overassignments()[alanKay], overassignments[alanKay])
+	assert.ElementsMatch(suite.T(), worksheet.Overassignments()[suite.danIngalls], overassignments[suite.danIngalls])
+	assert.ElementsMatch(suite.T(), worksheet.Overassignments()[suite.alanKay], overassignments[suite.alanKay])
 }
 
-func Test15DevelopersWithOverassignmentsReturnsArrayWithOverassignedDaysPerDeveloper(t *testing.T) {
-	SSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	SSB := NewConcreteTask("SS B", parcMobTeam, july1th, 16, []Task{})
-	SSC := NewConcreteTask("SS C", alanKay, july2th, 16, []Task{SSA, SSB})
+func (suite *ProjectTestSuite) Test15DevelopersWithOverassignmentsReturnsArrayWithOverassignedDaysPerDeveloper() {
+	SSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	SSB := NewConcreteTask("SS B", suite.parcMobTeam, suite.july1th, 16, []Task{})
+	SSC := NewConcreteTask("SS C", suite.alanKay, suite.july2th, 16, []Task{SSA, SSB})
 	model := NewProject("Modelo", []Task{SSA, SSB, SSC})
-	UI := NewConcreteTask("UI", adeleGoldberg, july2th, 6, []Task{model})
+	UI := NewConcreteTask("UI", suite.adeleGoldberg, suite.july2th, 6, []Task{model})
 	systemERP := NewProject("Sistema ERP", []Task{model, UI})
 
 	worksheet := systemERP.Worksheet()
 
 	overassignments := make(map[*Developer][]time.Time)
-	overassignments[danIngalls] = []time.Time{july1th}
-	overassignments[alanKay] = []time.Time{}
-	overassignments[adeleGoldberg] = []time.Time{}
+	overassignments[suite.danIngalls] = []time.Time{suite.july1th}
+	overassignments[suite.alanKay] = []time.Time{}
+	overassignments[suite.adeleGoldberg] = []time.Time{}
 
-	assert.ElementsMatch(t, worksheet.Overassignments()[danIngalls], overassignments[danIngalls])
-	assert.ElementsMatch(t, worksheet.Overassignments()[alanKay], overassignments[alanKay])
-	assert.ElementsMatch(t, worksheet.Overassignments()[adeleGoldberg], overassignments[adeleGoldberg])
+	assert.ElementsMatch(suite.T(), worksheet.Overassignments()[suite.danIngalls], overassignments[suite.danIngalls])
+	assert.ElementsMatch(suite.T(), worksheet.Overassignments()[suite.alanKay], overassignments[suite.alanKay])
+	assert.ElementsMatch(suite.T(), worksheet.Overassignments()[suite.adeleGoldberg], overassignments[suite.adeleGoldberg])
 }
 
-func Test16ProjectDoesNotHaveOverassignmentsIfDevelopersWorkInOneTaskForEachDate(t *testing.T) {
-	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+func (suite *ProjectTestSuite) Test16ProjectDoesNotHaveOverassignmentsIfDevelopersWorkInOneTaskForEachDate() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
 	project := NewProject("Modelo", []Task{taskSSA})
 	worksheet := project.Worksheet()
-	assert.False(t, worksheet.HasOverassignments())
+	assert.False(suite.T(), worksheet.HasOverassignments())
 }
 
-func Test17ProjectHavesOverassignmentsIfADeveloperWorksInMoreThanOneTaskInADate(t *testing.T) {
-	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	taskSSB := NewConcreteTask("SS B", parcMobTeam, july1th, 16, []Task{})
+func (suite *ProjectTestSuite) Test17ProjectHavesOverassignmentsIfADeveloperWorksInMoreThanOneTaskInADate() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	taskSSB := NewConcreteTask("SS B", suite.parcMobTeam, suite.july1th, 16, []Task{})
 	project := NewProject("modelo", []Task{taskSSA, taskSSB})
 	worksheet := project.Worksheet()
-	assert.True(t, worksheet.HasOverassignments())
+	assert.True(suite.T(), worksheet.HasOverassignments())
 }
 
-func Test18ProjectWithOneDeveloperTotalCostIsDeveloperNumberOfWorkingDaysTimesRate(t *testing.T) {
-	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
+func (suite *ProjectTestSuite) Test18ProjectWithOneDeveloperTotalCostIsDeveloperNumberOfWorkingDaysTimesRate() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
 	project := NewProject("Modelo", []Task{taskSSA})
 	worksheet := project.Worksheet()
-	assert.Equal(t, worksheet.TotalCost(), (8 * 60 * 1))
+	assert.Equal(suite.T(), worksheet.TotalCost(), (8 * 60 * 1))
 	/*
 		- Dan Ingalls: 8*hour/day * 60*dollar/hour * 1*day = 480*dollar
 		-> Total: 960*dollar
 	*/
 }
 
-func Test19ProjectTotalCostIsTheSumOfTasksCost(t *testing.T) {
-	taskSSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	taskSSB := NewConcreteTask("SS B", alanKay, july1th, 6, []Task{})
+func (suite *ProjectTestSuite) Test19ProjectTotalCostIsTheSumOfTasksCost() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	taskSSB := NewConcreteTask("SS B", suite.alanKay, suite.july1th, 6, []Task{})
 	project := NewProject("modelo", []Task{taskSSA, taskSSB})
 	worksheet := project.Worksheet()
 
-	assert.Equal(t, worksheet.TotalCost(), (8*60*1)+(6*80*1))
+	assert.Equal(suite.T(), worksheet.TotalCost(), (8*60*1)+(6*80*1))
 	/*
 		- Dan Ingalls: 8*hour/day * 60*dollar/hour * 1*day = 480*dollar
 		- Alan Kay: 6*hour/day * 80*dollar/hour * 1*day = 480*dollar
 		-> Total: 960*dollar
 	*/
 }
-func Test20ProjectOverAssignmentsSumToTotalCost(t *testing.T) {
-	SSA := NewConcreteTask("SS A", danIngalls, july1th, 8, []Task{})
-	SSB := NewConcreteTask("SS B", parcMobTeam, july1th, 16, []Task{})
-	SSC := NewConcreteTask("SS C", alanKay, july2th, 16, []Task{SSA, SSB})
+
+func (suite *ProjectTestSuite) Test20ProjectOverAssignmentsSumToTotalCost() {
+	SSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	SSB := NewConcreteTask("SS B", suite.parcMobTeam, suite.july1th, 16, []Task{})
+	SSC := NewConcreteTask("SS C", suite.alanKay, suite.july2th, 16, []Task{SSA, SSB})
 	model := NewProject("Modelo", []Task{SSA, SSB, SSC})
-	UI := NewConcreteTask("UI", adeleGoldberg, july2th, 6, []Task{model})
+	UI := NewConcreteTask("UI", suite.adeleGoldberg, suite.july2th, 6, []Task{model})
 	systemERP := NewProject("Sistema ERP", []Task{model, UI})
 
 	worksheet := systemERP.Worksheet()
 
-	assert.Equal(t, worksheet.TotalCost(), 5450)
+	assert.Equal(suite.T(), worksheet.TotalCost(), 5450)
 	/*
 		- Dan Ingalls: 8*hour/day * 60*dollar/hour * 4*day = 1440*dollar (Dan is overassigned on July1th, so he charges double on that day)
 		- Alan Kay: 6*hour/day * 80*dollar/hour * 6*day = 2880*dollar
@@ -193,3 +213,9 @@ func Test20ProjectOverAssignmentsSumToTotalCost(t *testing.T) {
 		-> Total: 5450*dollar
 	*/
 }
+
+/*
+func Test21DeveloperNameCanNotBeEmpty(t *testing.T) {
+	assert.PanicsWithError(t, "Developer name can not be empty!", func() { NewDeveloper("", 8, 60) })
+}
+*/
