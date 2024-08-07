@@ -2,6 +2,8 @@ package pkg
 
 import (
 	"Project/internal"
+	"errors"
+	"strings"
 	"time"
 )
 
@@ -14,6 +16,7 @@ type ConcreteTask struct {
 }
 
 func NewConcreteTask(aName string, aResponsible Responsible, aDesiredStartingDate time.Time, anEffort int, aSliceOfDependentTasks []Task) *ConcreteTask {
+	assertValidConcreteTask(aName, anEffort, aSliceOfDependentTasks)
 	t := new(ConcreteTask)
 	t.name = aName
 	t.responsible = aResponsible
@@ -21,6 +24,31 @@ func NewConcreteTask(aName string, aResponsible Responsible, aDesiredStartingDat
 	t.effort = anEffort
 	t.dependents = aSliceOfDependentTasks
 	return t
+}
+
+func assertValidConcreteTask(aName string, anEffort int, aSliceOfDependentTasks []Task) {
+	assertValidConcreteTaskName(aName)
+	assertValidEffort(anEffort)
+	assertValidDependents(aSliceOfDependentTasks)
+}
+
+func assertValidDependents(aSliceOfDependentTasks []Task) {
+	if len(internal.RepeatedElements(aSliceOfDependentTasks)) > 0 {
+		panic(errors.New("concrete task can not have direct repeated tasks"))
+	}
+}
+
+func assertValidEffort(anEffort int) {
+	if anEffort <= 0 {
+		panic(errors.New("concrete task effort must be positive"))
+	}
+}
+
+func assertValidConcreteTaskName(aName string) {
+	nameWithoutSpaces := strings.Replace(aName, " ", "", -1)
+	if len(nameWithoutSpaces) == 0 {
+		panic(errors.New("concrete task name can not be empty"))
+	}
 }
 
 func (ct ConcreteTask) StartDate() time.Time {

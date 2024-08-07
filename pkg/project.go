@@ -2,6 +2,8 @@ package pkg
 
 import (
 	"Project/internal"
+	"errors"
+	"strings"
 	"time"
 )
 
@@ -11,10 +13,29 @@ type Project struct {
 }
 
 func NewProject(aName string, aSliceOfTasks []Task) *Project {
+	assertValidProject(aName, aSliceOfTasks)
 	p := new(Project)
 	p.name = aName
 	p.subtasks = aSliceOfTasks
 	return p
+}
+
+func assertValidProject(aName string, aSliceOfTasks []Task) {
+	assertValidProjectName(aName)
+	assertValidSubtasks(aSliceOfTasks)
+}
+
+func assertValidSubtasks(aSliceOfTasks []Task) {
+	if len(aSliceOfTasks) == 0 {
+		panic(errors.New("project must have at least one subtask"))
+	}
+}
+
+func assertValidProjectName(aName string) {
+	nameWithoutSpaces := strings.Replace(aName, " ", "", -1)
+	if len(nameWithoutSpaces) == 0 {
+		panic(errors.New("project name can not be empty"))
+	}
 }
 
 func (p Project) StartDate() time.Time {

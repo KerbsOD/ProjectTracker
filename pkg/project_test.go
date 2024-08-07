@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"Project/internal"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -214,8 +215,101 @@ func (suite *ProjectTestSuite) Test20ProjectOverAssignmentsSumToTotalCost() {
 	*/
 }
 
-/*
-func Test21DeveloperNameCanNotBeEmpty(t *testing.T) {
-	assert.PanicsWithError(t, "Developer name can not be empty!", func() { NewDeveloper("", 8, 60) })
+func (suite *ProjectTestSuite) Test21DeveloperNameCanNotBeEmpty() {
+	assert.PanicsWithError(suite.T(), internal.EmptyDeveloperNameErrorString, func() {
+		NewDeveloper("", 8, 60)
+	})
+	assert.PanicsWithError(suite.T(), internal.EmptyDeveloperNameErrorString, func() {
+		NewDeveloper(" ", 8, 60)
+	})
 }
-*/
+
+func (suite *ProjectTestSuite) Test22DeveloperDedicationMustBePositive() {
+	assert.PanicsWithError(suite.T(), "developer dedication must be positive", func() {
+		NewDeveloper("Dan Ingalls", 0, 60)
+	})
+	assert.PanicsWithError(suite.T(), "developer dedication must be positive", func() {
+		NewDeveloper("Dan Ingalls", -3, 60)
+	})
+}
+
+func (suite *ProjectTestSuite) Test23DeveloperRateMustBePositive() {
+	assert.PanicsWithError(suite.T(), "developer rate per hour must be positive", func() {
+		NewDeveloper("Dan Ingalls", 8, 0)
+	})
+	assert.PanicsWithError(suite.T(), "developer rate per hour must be positive", func() {
+		NewDeveloper("Dan Ingalls", 8, -20)
+	})
+}
+
+func (suite *ProjectTestSuite) Test24TeamNameCanNotBeEmpty() {
+	assert.PanicsWithError(suite.T(), "team name can not be empty", func() {
+		NewTeam("", []Responsible{suite.danIngalls})
+	})
+	assert.PanicsWithError(suite.T(), "team name can not be empty", func() {
+		NewTeam(" ", []Responsible{suite.danIngalls})
+	})
+}
+
+func (suite *ProjectTestSuite) Test25TeamMustBeComposedOfSubteamsOrDevelopers() {
+	assert.PanicsWithError(suite.T(), "team must be composed of subteams or developers", func() {
+		NewTeam("Parc mob team", []Responsible{})
+	})
+}
+
+func (suite *ProjectTestSuite) Test26TeamCanNotHaveRepeatedSubteamsOrDevelopers() {
+	assert.PanicsWithError(suite.T(), "team can not have duplicated responsible", func() {
+		NewTeam("Team Dynamite", []Responsible{suite.alanKay, suite.alanKay})
+	})
+	assert.PanicsWithError(suite.T(), "team can not have duplicated responsible", func() {
+		NewTeam("Team Super Cool", []Responsible{suite.parcMobTeam, suite.parcMobTeam})
+	})
+}
+
+func (suite *ProjectTestSuite) Test27TeamCanNotHaveRepeatedSubteamsOrDevelopersWithinSubteams() {
+	assert.PanicsWithError(suite.T(), "team can not have duplicated responsible", func() {
+		NewTeam("Team Super Cool", []Responsible{suite.alanKay, suite.parcMobTeam})
+	})
+}
+
+func (suite *ProjectTestSuite) Test28ConcreteTaskNameCanNotBeEmpty() {
+	assert.PanicsWithError(suite.T(), "concrete task name can not be empty", func() {
+		NewConcreteTask("", suite.danIngalls, suite.july1th, 8, []Task{})
+	})
+	assert.PanicsWithError(suite.T(), "concrete task name can not be empty", func() {
+		NewConcreteTask(" ", suite.danIngalls, suite.july1th, 8, []Task{})
+	})
+}
+
+func (suite *ProjectTestSuite) Test29ConcreteTaskEffortMustBePositive() {
+	assert.PanicsWithError(suite.T(), "concrete task effort must be positive", func() {
+		NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 0, []Task{})
+	})
+	assert.PanicsWithError(suite.T(), "concrete task effort must be positive", func() {
+		NewConcreteTask("SS B", suite.danIngalls, suite.july1th, -8, []Task{})
+	})
+}
+
+func (suite *ProjectTestSuite) Test30ConcreteTaskCanNotHaveDirectRepeatedDependentsTasks() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	assert.PanicsWithError(suite.T(), "concrete task can not have direct repeated tasks", func() {
+		NewConcreteTask("SS B", suite.parcMobTeam, suite.july1th, 16, []Task{taskSSA, taskSSA})
+	})
+	/*
+		It may happen that task X depends on tasks Y and Z, and at the same time, task Z depends on task Y.
+		Circular dependency is impossible because we can not add an object at its own construction (clash).
+	*/
+}
+
+func (suite *ProjectTestSuite) Test31ProjectNameCanNotBeEmpty() {
+	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
+	assert.PanicsWithError(suite.T(), "project name can not be empty", func() {
+		NewProject("", []Task{taskSSA})
+	})
+}
+
+func (suite *ProjectTestSuite) Test32ProjectCanNotHaveEmptySubtasks() {
+	assert.PanicsWithError(suite.T(), "project must have at least one subtask", func() {
+		NewProject("UI", []Task{})
+	})
+}
