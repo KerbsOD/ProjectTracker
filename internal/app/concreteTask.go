@@ -1,7 +1,9 @@
-package pkg
+package app
 
 import (
-	"Project/internal"
+	"Project/internal/errorMessage"
+	"Project/internal/extensions"
+	"Project/internal/generics"
 	"errors"
 	"time"
 )
@@ -30,13 +32,13 @@ func (ct ConcreteTask) StartDate() time.Time {
 		return ct.expectedDate
 	}
 	latestFinishDate := ct.latestFinishDateOfSubtasks()
-	startDate := internal.MaxDateBetween(ct.expectedDate, latestFinishDate.Add(internal.Day)) // We don't start a task the same day we finish a task so the finish date will be the next day
+	startDate := extensions.MaxDateBetween(ct.expectedDate, latestFinishDate.Add(extensions.Day)) // We don't start a task the same day we finish a task so the finish date will be the next day
 	return startDate
 }
 
 func (ct ConcreteTask) FinishDate() time.Time {
 	daysOfWork := ct.responsible.DaysToFinish(ct.effort)
-	finishDate := ct.StartDate().Add(daysOfWork - internal.Day) // We finish at the end of the day, not the next day.
+	finishDate := ct.StartDate().Add(daysOfWork - extensions.Day) // We finish at the end of the day, not the next day.
 	return finishDate
 }
 
@@ -56,29 +58,29 @@ func assertValidConcreteTask(aName string, anEffort int, aSliceOfDependentTasks 
 }
 
 func assertValidConcreteTaskName(aName string) {
-	if internal.EmptyName(aName) {
-		panic(errors.New(internal.InvalidConcreteTaskNameErrorMessage))
+	if generics.EmptyName(aName) {
+		panic(errors.New(errorMessage.InvalidConcreteTaskNameErrorMessage))
 	}
 }
 
 func assertValidEffort(anEffort int) {
 	if anEffort <= 0 {
-		panic(errors.New(internal.InvalidConcreteTaskEffortErrorMessage))
+		panic(errors.New(errorMessage.InvalidConcreteTaskEffortErrorMessage))
 	}
 }
 
 func assertValidDependents(aSliceOfDependentTasks []Task) {
-	if len(internal.RepeatedElements(aSliceOfDependentTasks)) > 0 {
-		panic(errors.New(internal.InvalidConcreteTaskDependentsErrorMessage))
+	if len(generics.RepeatedElements(aSliceOfDependentTasks)) > 0 {
+		panic(errors.New(errorMessage.InvalidConcreteTaskDependentsErrorMessage))
 	}
 }
 
 func (ct ConcreteTask) latestFinishDateOfSubtasks() time.Time {
-	finishDates := internal.Map(ct.dependents, func(aTask Task) time.Time { return aTask.FinishDate() })
-	latestFinishDate := internal.MaxDateInArray(finishDates)
+	finishDates := generics.Map(ct.dependents, func(aTask Task) time.Time { return aTask.FinishDate() })
+	latestFinishDate := extensions.MaxDateInArray(finishDates)
 	return latestFinishDate
 }
 
 func (ct ConcreteTask) workingDates() []time.Time {
-	return internal.DatesBetween(ct.StartDate(), ct.FinishDate())
+	return extensions.DatesBetween(ct.StartDate(), ct.FinishDate())
 }

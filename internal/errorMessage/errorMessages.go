@@ -1,4 +1,4 @@
-package internal
+package errorMessage
 
 // Developer
 const InvalidDeveloperNameErrorMessage = "developer name can not be empty"

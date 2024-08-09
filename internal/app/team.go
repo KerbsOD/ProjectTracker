@@ -1,7 +1,9 @@
-package pkg
+package app
 
 import (
-	"Project/internal"
+	"Project/internal/errorMessage"
+	"Project/internal/extensions"
+	"Project/internal/generics"
 	"errors"
 	"time"
 )
@@ -21,7 +23,7 @@ func NewTeam(aName string, aResponsibles []Responsible) *Team {
 
 func (t Team) DaysToFinish(anEffort int) time.Duration {
 	daysToCompleteTaskForEachResponsible := t.daysToCompleteTaskForEachResponsible(anEffort)
-	maxDaysToCompleteTaskAmongResponsibles := internal.MaximizeElementByComparer(daysToCompleteTaskForEachResponsible, internal.GreaterDuration)
+	maxDaysToCompleteTaskAmongResponsibles := generics.MaximizeElementByComparer(daysToCompleteTaskForEachResponsible, extensions.GreaterDuration)
 	return maxDaysToCompleteTaskAmongResponsibles
 }
 
@@ -48,8 +50,8 @@ func assertValidTeam(aName string, aResponsibles []Responsible) {
 }
 
 func assertValidTeamName(aName string) {
-	if internal.EmptyName(aName) {
-		panic(errors.New(internal.InvalidTeamNameErrorMessage))
+	if generics.EmptyName(aName) {
+		panic(errors.New(errorMessage.InvalidTeamNameErrorMessage))
 	}
 }
 
@@ -60,7 +62,7 @@ func assertValidResponsible(aResponsibles []Responsible) {
 
 func assertNotEmptyResponsible(aResponsibles []Responsible) {
 	if len(aResponsibles) == 0 {
-		panic(errors.New(internal.InvalidTeamResponsibleErrorMessage))
+		panic(errors.New(errorMessage.InvalidTeamResponsibleErrorMessage))
 	}
 }
 
@@ -70,12 +72,12 @@ func assertNotRepeatedResponsible(aResponsibles []Responsible) {
 		responsible.AddResponsiblesTo(&aResponsibleCollector)
 	}
 
-	if len(internal.RepeatedElements(aResponsibleCollector)) > 0 {
-		panic(errors.New(internal.InvalidTeamResponsibleErrorMessage))
+	if len(generics.RepeatedElements(aResponsibleCollector)) > 0 {
+		panic(errors.New(errorMessage.InvalidTeamResponsibleErrorMessage))
 	}
 }
 
 func (t Team) daysToCompleteTaskForEachResponsible(anEffort int) []time.Duration {
-	daysToCompleteForEachResponsible := internal.Map(t.responsibles, func(aResponsible Responsible) time.Duration { return aResponsible.DaysToFinish(anEffort) })
+	daysToCompleteForEachResponsible := generics.Map(t.responsibles, func(aResponsible Responsible) time.Duration { return aResponsible.DaysToFinish(anEffort) })
 	return daysToCompleteForEachResponsible
 }

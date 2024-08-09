@@ -1,7 +1,9 @@
-package pkg
+package app
 
 import (
-	"Project/internal"
+	"Project/internal/errorMessage"
+	"Project/internal/extensions"
+	"Project/internal/generics"
 	"errors"
 	"math"
 	"time"
@@ -24,7 +26,7 @@ func NewDeveloper(aName string, aDedication int, aRate int) *Developer {
 
 func (d *Developer) DaysToFinish(anEffort int) time.Duration {
 	workSessions := int(math.Ceil(float64(anEffort) / float64(d.dedication)))
-	fullWorkDays := time.Duration(workSessions) * internal.Day
+	fullWorkDays := time.Duration(workSessions) * extensions.Day
 	return fullWorkDays
 }
 
@@ -54,19 +56,19 @@ func assertValidDeveloper(aName string, aDedication int, aRate int) {
 }
 
 func assertValidDeveloperName(aName string) {
-	if internal.EmptyName(aName) {
-		panic(errors.New(internal.InvalidDeveloperNameErrorMessage))
+	if generics.EmptyName(aName) {
+		panic(errors.New(errorMessage.InvalidDeveloperNameErrorMessage))
 	}
 }
 
 func assertValidDedication(aDedication int) {
 	if aDedication < 1 {
-		panic(errors.New(internal.InvalidDeveloperDedicationErrorMessage))
+		panic(errors.New(errorMessage.InvalidDeveloperDedicationErrorMessage))
 	}
 }
 
 func assertValidRate(aRate int) {
 	if aRate < 1 {
-		panic(errors.New(internal.InvalidDeveloperRateErrorMessage))
+		panic(errors.New(errorMessage.InvalidDeveloperRateErrorMessage))
 	}
 }

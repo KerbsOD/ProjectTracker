@@ -1,7 +1,9 @@
-package pkg
+package app
 
 import (
-	"Project/internal"
+	"Project/internal/errorMessage"
+	"Project/internal/extensions"
+	"Project/internal/generics"
 	"errors"
 	"time"
 )
@@ -49,23 +51,23 @@ func assertValidProject(aName string, aSliceOfTasks []Task) {
 }
 
 func assertValidProjectName(aName string) {
-	if internal.EmptyName(aName) {
-		panic(errors.New(internal.InvalidProjectNameErrorMessage))
+	if generics.EmptyName(aName) {
+		panic(errors.New(errorMessage.InvalidProjectNameErrorMessage))
 	}
 }
 
 func assertValidSubtasks(aSliceOfTasks []Task) {
 	if len(aSliceOfTasks) == 0 {
-		panic(errors.New(internal.InvalidProjectSubtasksErrorMessage))
+		panic(errors.New(errorMessage.InvalidProjectSubtasksErrorMessage))
 	}
 }
 
 func (p Project) earliestStartDateOfSubtasks() time.Time {
-	startDates := internal.Map(p.subtasks, func(aTask Task) time.Time { return aTask.StartDate() })
-	return internal.MinDateInArray(startDates)
+	startDates := generics.Map(p.subtasks, func(aTask Task) time.Time { return aTask.StartDate() })
+	return extensions.MinDateInArray(startDates)
 }
 
 func (p Project) latestFinishDateOfSubtasks() time.Time {
-	finishDates := internal.Map(p.subtasks, func(aTask Task) time.Time { return aTask.FinishDate() })
-	return internal.MaxDateInArray(finishDates)
+	finishDates := generics.Map(p.subtasks, func(aTask Task) time.Time { return aTask.FinishDate() })
+	return extensions.MaxDateInArray(finishDates)
 }

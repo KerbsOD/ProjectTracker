@@ -1,7 +1,7 @@
-package pkg
+package app
 
 import (
-	"Project/internal"
+	"Project/internal/errorMessage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -216,83 +216,83 @@ func (suite *ProjectTestSuite) Test20ProjectOverAssignmentsSumToTotalCost() {
 }
 
 func (suite *ProjectTestSuite) Test21DeveloperNameCanNotBeEmpty() {
-	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperNameErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidDeveloperNameErrorMessage, func() {
 		NewDeveloper("", 8, 60)
 	})
-	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperNameErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidDeveloperNameErrorMessage, func() {
 		NewDeveloper(" ", 8, 60)
 	})
 }
 
 func (suite *ProjectTestSuite) Test22DeveloperDedicationMustBePositive() {
-	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperDedicationErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidDeveloperDedicationErrorMessage, func() {
 		NewDeveloper("Dan Ingalls", 0, 60)
 	})
-	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperDedicationErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidDeveloperDedicationErrorMessage, func() {
 		NewDeveloper("Dan Ingalls", -3, 60)
 	})
 }
 
 func (suite *ProjectTestSuite) Test23DeveloperRateMustBePositive() {
-	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperRateErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidDeveloperRateErrorMessage, func() {
 		NewDeveloper("Dan Ingalls", 8, 0)
 	})
-	assert.PanicsWithError(suite.T(), internal.InvalidDeveloperRateErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidDeveloperRateErrorMessage, func() {
 		NewDeveloper("Dan Ingalls", 8, -20)
 	})
 }
 
 func (suite *ProjectTestSuite) Test24TeamNameCanNotBeEmpty() {
-	assert.PanicsWithError(suite.T(), internal.InvalidTeamNameErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidTeamNameErrorMessage, func() {
 		NewTeam("", []Responsible{suite.danIngalls})
 	})
-	assert.PanicsWithError(suite.T(), internal.InvalidTeamNameErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidTeamNameErrorMessage, func() {
 		NewTeam(" ", []Responsible{suite.danIngalls})
 	})
 }
 
 func (suite *ProjectTestSuite) Test25TeamMustBeComposedOfSubteamsOrDevelopers() {
-	assert.PanicsWithError(suite.T(), internal.InvalidTeamResponsibleErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidTeamResponsibleErrorMessage, func() {
 		NewTeam("Parc mob team", []Responsible{})
 	})
 }
 
 func (suite *ProjectTestSuite) Test26TeamCanNotHaveRepeatedSubteamsOrDevelopers() {
-	assert.PanicsWithError(suite.T(), internal.InvalidTeamResponsibleErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidTeamResponsibleErrorMessage, func() {
 		NewTeam("Team Dynamite", []Responsible{suite.alanKay, suite.alanKay})
 	})
-	assert.PanicsWithError(suite.T(), internal.InvalidTeamResponsibleErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidTeamResponsibleErrorMessage, func() {
 		NewTeam("Team Super Cool", []Responsible{suite.parcMobTeam, suite.parcMobTeam})
 	})
 }
 
 func (suite *ProjectTestSuite) Test27TeamCanNotHaveRepeatedSubteamsOrDevelopersWithinSubteams() {
-	assert.PanicsWithError(suite.T(), internal.InvalidTeamResponsibleErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidTeamResponsibleErrorMessage, func() {
 		NewTeam("Team Super Cool", []Responsible{suite.alanKay, suite.parcMobTeam})
 	})
 }
 
 func (suite *ProjectTestSuite) Test28ConcreteTaskNameCanNotBeEmpty() {
-	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskNameErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidConcreteTaskNameErrorMessage, func() {
 		NewConcreteTask("", suite.danIngalls, suite.july1th, 8, []Task{})
 	})
-	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskNameErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidConcreteTaskNameErrorMessage, func() {
 		NewConcreteTask(" ", suite.danIngalls, suite.july1th, 8, []Task{})
 	})
 }
 
 func (suite *ProjectTestSuite) Test29ConcreteTaskEffortMustBePositive() {
-	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskEffortErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidConcreteTaskEffortErrorMessage, func() {
 		NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 0, []Task{})
 	})
-	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskEffortErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidConcreteTaskEffortErrorMessage, func() {
 		NewConcreteTask("SS B", suite.danIngalls, suite.july1th, -8, []Task{})
 	})
 }
 
 func (suite *ProjectTestSuite) Test30ConcreteTaskCanNotHaveDirectRepeatedDependentsTasks() {
 	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
-	assert.PanicsWithError(suite.T(), internal.InvalidConcreteTaskDependentsErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidConcreteTaskDependentsErrorMessage, func() {
 		NewConcreteTask("SS B", suite.parcMobTeam, suite.july1th, 16, []Task{taskSSA, taskSSA})
 	})
 	/*
@@ -303,13 +303,13 @@ func (suite *ProjectTestSuite) Test30ConcreteTaskCanNotHaveDirectRepeatedDepende
 
 func (suite *ProjectTestSuite) Test31ProjectNameCanNotBeEmpty() {
 	taskSSA := NewConcreteTask("SS A", suite.danIngalls, suite.july1th, 8, []Task{})
-	assert.PanicsWithError(suite.T(), internal.InvalidProjectNameErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidProjectNameErrorMessage, func() {
 		NewProject("", []Task{taskSSA})
 	})
 }
 
 func (suite *ProjectTestSuite) Test32ProjectCanNotHaveEmptySubtasks() {
-	assert.PanicsWithError(suite.T(), internal.InvalidProjectSubtasksErrorMessage, func() {
+	assert.PanicsWithError(suite.T(), errorMessage.InvalidProjectSubtasksErrorMessage, func() {
 		NewProject("UI", []Task{})
 	})
 }

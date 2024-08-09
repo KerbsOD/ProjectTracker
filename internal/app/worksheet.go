@@ -1,7 +1,7 @@
-package pkg
+package app
 
 import (
-	"Project/internal"
+	"Project/internal/generics"
 	"time"
 )
 
@@ -45,7 +45,7 @@ func (ws WorkSheet) TotalCost() int {
 }
 
 func (ws WorkSheet) overassignedDates(aWorkingDates []time.Time) []time.Time {
-	return internal.RepeatedElements(aWorkingDates)
+	return generics.RepeatedElements(aWorkingDates)
 }
 
 func (ws WorkSheet) calculateWorkingDatesByDeveloper() map[*Developer][]time.Time {
